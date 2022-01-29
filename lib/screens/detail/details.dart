@@ -57,7 +57,7 @@ class Details extends StatelessWidget {
             backgroundColor: Colors.transparent,
             elevation: 0,
           ),
-          floatingActionButton: dataprovider.spacificTaskCategory.length== 0
+          floatingActionButton: dataprovider.spacificTaskCategory.length == 0
               ? Container(
                   decoration: BoxDecoration(
                       border: Border.all(color: Color(0xFF649dfe), width: 2),
@@ -123,18 +123,18 @@ class Details extends StatelessWidget {
                     ),
                   ),
                   Expanded(
-                    child: Container(
-                        margin: EdgeInsets.only(top: 40),
-                        width: MediaQuery.of(context).size.width,
-                        decoration: BoxDecoration(
-                            color: Colors.grey[100],
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(25),
-                              topRight: Radius.circular(25),
-                            )),
-                        child: Container(
+                      child: Container(
+                          margin: EdgeInsets.only(top: 40),
+                          width: MediaQuery.of(context).size.width,
+                          decoration: BoxDecoration(
+                              color: Colors.grey[100],
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(25),
+                                topRight: Radius.circular(25),
+                              )),
+                          child: Container(
                             margin: EdgeInsets.only(top: 25),
-                            child: provider.spacificTaskCategory.length!= 0
+                            child: provider.spacificTaskCategory.length != 0
                                 ? ListView.builder(
                                     itemBuilder: (context, index) {
                                       return Taskwidget(
@@ -146,8 +146,8 @@ class Details extends StatelessWidget {
                                         .spacificTaskCategory.length,
                                   )
                                 : Lottie.asset('assets/animations/empty.json',
-                                    width: 200, height: 200))),
-                  ),
+                                    width: 200, height: 200),
+                          ))),
                 ],
               );
             },
