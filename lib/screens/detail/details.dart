@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:material_color_picker_wns/material_color_picker_wns.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_ui/Router/router.dart';
@@ -56,7 +57,7 @@ class Details extends StatelessWidget {
             backgroundColor: Colors.transparent,
             elevation: 0,
           ),
-          floatingActionButton: category.numoftask == 0
+          floatingActionButton: dataprovider.spacificTaskCategory.length== 0
               ? Container(
                   decoration: BoxDecoration(
                       border: Border.all(color: Color(0xFF649dfe), width: 2),
@@ -123,26 +124,29 @@ class Details extends StatelessWidget {
                   ),
                   Expanded(
                     child: Container(
-                      margin: EdgeInsets.only(top: 40),
-                      width: MediaQuery.of(context).size.width,
-                      decoration: BoxDecoration(
-                          color: Colors.grey[100],
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(25),
-                            topRight: Radius.circular(25),
-                          )),
-                      child: Container(
-                        margin: EdgeInsets.only(top: 25),
-                        child: ListView.builder(
-                          itemBuilder: (context, index) {
-                            return Taskwidget(
-                                dataprovider.spacificTaskCategory[index],
-                                category);
-                          },
-                          itemCount: dataprovider.spacificTaskCategory.length,
-                        ),
-                      ),
-                    ),
+                        margin: EdgeInsets.only(top: 40),
+                        width: MediaQuery.of(context).size.width,
+                        decoration: BoxDecoration(
+                            color: Colors.grey[100],
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(25),
+                              topRight: Radius.circular(25),
+                            )),
+                        child: Container(
+                            margin: EdgeInsets.only(top: 25),
+                            child: provider.spacificTaskCategory.length!= 0
+                                ? ListView.builder(
+                                    itemBuilder: (context, index) {
+                                      return Taskwidget(
+                                          dataprovider
+                                              .spacificTaskCategory[index],
+                                          category);
+                                    },
+                                    itemCount: dataprovider
+                                        .spacificTaskCategory.length,
+                                  )
+                                : Lottie.asset('assets/animations/empty.json',
+                                    width: 200, height: 200))),
                   ),
                 ],
               );
@@ -282,55 +286,88 @@ Widget Taskwidget(Task task, Category category) {
                             ),
                           ),
                         )
-                      : Container(
-                          margin: EdgeInsets.only(right: 20),
-                          child: Card(
-                            color: Colors.white.withOpacity(0.5),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12)),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  margin: EdgeInsets.only(
-                                      top: 25, left: 20, right: 20),
-                                  child: Row(
-                                    children: [
-                                      Text(
-                                        task.title,
-                                        style: TextStyle(
-                                            color: Colors.black,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 17,
-                                            decoration:
-                                                TextDecoration.lineThrough),
-                                      ),
-                                      Spacer(),
-                                      Text(
-                                        '${task.time}',
-                                        style: TextStyle(
-                                          color: Colors.grey[500],
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.bold,
+                      : InkWell(
+                          onLongPress: () {
+                            showDialog(
+                              context: context,
+                              builder: (_) {
+                                return AlertDialog(
+                                  contentPadding: const EdgeInsets.all(6.0),
+                                  title: Text("Are you sure to Delete Task ?"),
+                                  actions: [
+                                    TextButton(
+                                      child: Text('No'),
+                                      onPressed: Navigator.of(context).pop,
+                                    ),
+                                    TextButton(
+                                      child: Text('Yes'),
+                                      onPressed: () async {
+                                        await prov.deleteTask(task);
+                                        await prov.getspacificTask(category);
+                                        await prov.getspacificTasknum(category);
+                                        int numOfTask =
+                                            prov.spacificTaskCategorynum.length;
+                                        category.numoftask = numOfTask;
+                                        Category newcategory = category;
+                                        catprov.updateCategory(newcategory);
+                                        RouterClass.routerClass.popFunction();
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                          child: Container(
+                            margin: EdgeInsets.only(right: 20),
+                            child: Card(
+                              color: Colors.white.withOpacity(0.5),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12)),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    margin: EdgeInsets.only(
+                                        top: 25, left: 20, right: 20),
+                                    child: Row(
+                                      children: [
+                                        Text(
+                                          task.title,
+                                          style: TextStyle(
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 17,
+                                              decoration:
+                                                  TextDecoration.lineThrough),
                                         ),
-                                      ),
-                                    ],
+                                        Spacer(),
+                                        Text(
+                                          '${task.time}',
+                                          style: TextStyle(
+                                            color: Colors.grey[500],
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Container(
-                                    margin:
-                                        EdgeInsets.symmetric(horizontal: 20),
-                                    child: Text(
-                                      task.Description,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                          color: Colors.grey[500],
-                                          fontSize: 15),
-                                    ))
-                              ],
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  Container(
+                                      margin:
+                                          EdgeInsets.symmetric(horizontal: 20),
+                                      child: Text(
+                                        task.Description,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                            color: Colors.grey[500],
+                                            fontSize: 15),
+                                      ))
+                                ],
+                              ),
                             ),
                           ),
                         ),
